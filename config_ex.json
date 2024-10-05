@@ -1,0 +1,4 @@
+{
+    "connectionString": "postgresql://exampledatabasestring",
+    "openai_key": "sk-exampleopenaikey"
+}
