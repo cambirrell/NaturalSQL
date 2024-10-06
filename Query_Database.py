@@ -10,6 +10,17 @@ client = OpenAI(api_key=config['openai_key'])
 
 engine = create_engine(conn_string)
 
+create_team_table_command = text(
+    """
+    CREATE TABLE team (
+    team_id SERIAL PRIMARY KEY,
+    team_name varchar(255) NOT NULL,
+    city varchar(255) NOT NULL,
+    state char(2) NOT NULL
+);
+    """
+)
+
 create_person_table_command = text(
     """
     CREATE TABLE person (
@@ -19,32 +30,23 @@ create_person_table_command = text(
     role VARCHAR(50) CHECK (role IN ('coach', 'athlete', 'official')),
     date_of_birth DATE NOT NULL,
     active BOOLEAN NOT NULL,
-    team_id int
-    );
+    team_id INT,
+    CONSTRAINT fk_team_id FOREIGN KEY (team_id) REFERENCES team(team_id)
+);
     """
 )
-
-create_team_table_command = text(
-    """
-    CREATE TABLE team (
-    team_id int PRIMARY KEY NOT NULL ,
-    team_name varchar(255) NOT NULL,
-    city varchar(255) NOT NULL,
-    state char(2) NOT NULL
-    );
-    """
-)
-
 create_swims_table_command = text(
     """
     CREATE TABLE swims (
-    distance int NOT NULL,
+    distance INT NOT NULL,
     stroke CHAR(2) CHECK (stroke IN ('FR', 'BK', 'BR', 'FL', 'IM')),
     time TIME NOT NULL,
     date DATE NOT NULL,
-    person_id int NOT NULL,
-    meet_id int NOT NULL
-    );
+    person_id INT NOT NULL,
+    meet_id INT NOT NULL,
+    CONSTRAINT fk_person_id FOREIGN KEY (person_id) REFERENCES person(person_id),
+    CONSTRAINT fk_meet_id FOREIGN KEY (meet_id) REFERENCES meet(meet_id)
+);
     """
 )
 
@@ -113,7 +115,7 @@ while True:
 
     cleaned = response.choices[0].message.content
     cleaned = cleaned.replace("```", "").replace("```", "").replace("sql", "")
-
+    print(cleaned)
     results = ""
     try:
         with engine.connect() as conn:
