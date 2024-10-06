@@ -100,10 +100,24 @@ while True:
 
 
     prompt = context + instruction + question
-
+    prompt_example = context + instruction + "How won the Gold Medal in the 100 meter freestyle at the last Olympics?"
+    assistant_example = "SELECT first_name, last_name FROM person WHERE role='athlete' AND person_id IN (SELECT person_id FROM swims WHERE meet_id IN (SELECT meet_id FROM meet WHERE meet_name='Olympic Trials') AND distance=100 AND stroke='FR' ORDER BY time LIMIT 1);"
     response = client.chat.completions.create(
         model= "gpt-4o",
         messages= [
+            {
+                "role": "system",
+                "content": "You are a database administrator and will give sql commands to help answer questions about the database. Remove any extra formatting and only provide the sql command."
+            },
+            {
+                "role": "user",
+                "content": prompt_example
+            },
+            {
+                "role": "assistant",
+                "content": assistant_example
+            },
+            
             {
                 "role": "system",
                 "content": "You are a database administrator and will give sql commands to help answer questions about the database. Remove any extra formatting and only provide the sql command."
@@ -132,11 +146,25 @@ while True:
         else:
             continue
 
+    natural_language_example = "Respond to the question: How won the Gold Medal in the 100 meter freestyle at the last Olympics? According to the database, the answer is (Michael, Wilson)"
+    response_example = "Michael Wilson won the Gold Medal in the 100 meter freestyle at the last Olympics."
     natural_language_explaination = f"Respond to the question: {question} According to the database, the answer is {results}"
 
     natural_language_responce = client.chat.completions.create(
         model= "gpt-4o",
         messages= [
+            {
+                "role": "system",
+                "content": "You are a database administrator and just ran a sql command to find the answer to a question. Provide a natural language explanation of the results even if the results doesn't make sense or is not reasonable. Don't make any refernce database, pretend you are explaining it to someone who doesn't know anything about databases, and you know the answer off the top of your head, but don't explain any futher."
+            },
+            {
+                "role": "user",
+                "content": natural_language_example
+            },
+            {
+                "role": "assistant",
+                "content": response_example
+            },
             {
                 "role": "system",
                 "content": "You are a database administrator and just ran a sql command to find the answer to a question. Provide a natural language explanation of the results even if the results doesn't make sense or is not reasonable. Don't make any refernce database, pretend you are explaining it to someone who doesn't know anything about databases, and you know the answer off the top of your head, but don't explain any futher."

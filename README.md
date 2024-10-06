@@ -53,5 +53,11 @@ I'm sorry, I couldn't find the answer to that question. Would you like to ask an
 
 
 ### Different prompts tested
+At first I just put in the show tables command and put the column names in the context. I also put in 5 example rows from each column. This strategy was not adequete though since I often asked about a particular meet like the olympics, but I didn't write it like how it was in the table, and since the context didn't include how it was written in the table, it would guess and get an error. 
+So I added all the names of clubs and meets, and This dramatically improved results. This prompt was still hit and miss when I wanted to know things like who won the most gold medals at the olympics. This question would sometimes work, but sometimes didn't work. 
+
+So, I tried a few shot prompting with that as one of the examples.
+The specific one I used was Who won gold in the 100 freestyle at the last Olympics.
+This improve the results and made it more consistant with those types of questions. It still can't do a more complex query like who won the most silver medals at the last olympics though.
 
 
