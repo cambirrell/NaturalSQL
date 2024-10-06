@@ -1,0 +1,102 @@
+What would you like to know about the database?: 
+Who has the fastest 50 free?
+SELECT p.first_name, p.last_name, s.time
+FROM swims s
+JOIN person p ON s.person_id = p.person_id
+WHERE s.distance = 50 AND s.stroke = 'FR'
+ORDER BY s.time ASC
+LIMIT 1;
+Cameron Jones currently holds the record for the fastest time in the 50-meter freestyle swimming event, completing it in 20 seconds flat.
+Would you like to ask another question? (yes/no): 
+yes
+What would you like to know about the database?: 
+What are all of Cameron Jones's best times?
+
+SELECT s.distance, s.stroke, MIN(s.time) AS best_time
+FROM person p
+JOIN swims s ON p.person_id = s.person_id
+WHERE p.first_name = 'Cameron' AND p.last_name = 'Jones'
+GROUP BY s.distance, s.stroke;
+
+Cameron Jones has achieved some impressive swimming times across various distances and strokes. For the 50 meter events, their fastest times are 20 seconds in freestyle and 33 seconds in butterfly. For 100 meters, they clocked 14 seconds in freestyle and 19 seconds in individual medley. In the 200 meter distance, they completed the backstroke in 2 minutes and 12 seconds and the butterfly in 1 minute and 35 seconds. At 400 meters, they swam the breaststroke in 4 minutes and 14 seconds. For the longer distances, Cameron's best times include 11 minutes and 15 seconds in the 1500 meter butterfly and 14 minutes and 58 seconds in the 1500 meter freestyle.
+Would you like to ask another question? (yes/no): 
+yes
+What would you like to know about the database?: 
+When was the last olympics?
+
+SELECT MAX(end_date) AS last_olympics_date
+FROM meet
+WHERE meet_name = 'Olympic Trials';
+
+The last Olympic Games took place on January 1, 2017.
+Would you like to ask another question? (yes/no): 
+yes
+What would you like to know about the database?: 
+How many Olympics have there been according to the records?
+
+SELECT COUNT(*) FROM meet WHERE meet_name = 'Olympic Trials';
+
+According to the records I checked, there has been one instance of the Olympics held.
+Would you like to ask another question? (yes/no): 
+yes
+What would you like to know about the database?: 
+who won the most gold medals at the last olympics?
+
+SELECT person_id, COUNT(*) AS gold_medals
+FROM swims
+WHERE meet_id = (
+    SELECT meet_id
+    FROM meet
+    WHERE meet_name = 'Olympics' -- Replace with actual event name if necessary
+    ORDER BY end_date DESC
+    LIMIT 1
+) AND time = (
+    SELECT MIN(time)
+    FROM swims
+    WHERE meet_id = (
+        SELECT meet_id
+        FROM meet
+        WHERE meet_name = 'Olympics'
+        ORDER BY end_date DESC
+        LIMIT 1
+    ) AND distance = s.distance AND stroke = s.stroke
+) GROUP BY person_id
+ORDER BY gold_medals DESC
+LIMIT 1;
+
+(psycopg2.errors.UndefinedTable) missing FROM-clause entry for table "s"
+LINE 19:     ) AND distance = s.distance AND stroke = s.stroke
+                              ^
+
+[SQL: 
+SELECT person_id, COUNT(*) AS gold_medals
+FROM swims
+WHERE meet_id = (
+    SELECT meet_id
+    FROM meet
+    WHERE meet_name = 'Olympics' -- Replace with actual event name if necessary
+    ORDER BY end_date DESC
+    LIMIT 1
+) AND time = (
+    SELECT MIN(time)
+    FROM swims
+    WHERE meet_id = (
+        SELECT meet_id
+        FROM meet
+        WHERE meet_name = 'Olympics'
+        ORDER BY end_date DESC
+        LIMIT 1
+    ) AND distance = s.distance AND stroke = s.stroke
+) GROUP BY person_id
+ORDER BY gold_medals DESC
+LIMIT 1;
+]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+I'm sorry, I couldn't find the answer to that question. Would you like to ask another question? (yes/no): 
+yes
+What would you like to know about the database?: 
+How many coaches are named Cameron?
+
+SELECT COUNT(*) FROM person WHERE first_name = 'Cameron' AND role = 'coach';
+
+There are 11 individuals who are coaches and have the first name Cameron.
